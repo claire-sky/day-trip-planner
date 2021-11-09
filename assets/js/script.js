@@ -11,10 +11,7 @@ var citySearch = function (event) {
         // function would go here to be called
         cityName.value = ""
         modal.classList.remove("is-active");
-    } else {
-        alert("Please enter a city name")
-    }
-}
+    } }
 
 // Event Listener
 submit.addEventListener("click", citySearch)
