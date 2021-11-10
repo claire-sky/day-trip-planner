@@ -5,8 +5,30 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Day Trip Planner</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <link rel="stylesheet" href="./assets/css/style.css">
 </head>
 <body>
-    
+    <div class="modal is-active" id="mainModal">
+        <div class="modal-background"></div>
+        <div class="modal-content has-background-white px-5 py-5">
+            <div>Welcome to the best day-trip-planner website in the world! All we need to know is where you are planning to go and we will help you make your day-trip the best day ever by giving you all the weather information you need!</div>
+            <div class="is-italic mb-6">We've even included a quick way to make a list for what you want to (or should) bring!</div>
+            <div class="is-underlined mb-3">Just let us know what city you plan on visiting below and we'll take care of the rest!</div>
+            <div class="field has-addons" id="cityForm">
+                <div class="control">
+                    <input class="input" type="text" id="city" placeholder="City Name goes here!">
+                    <p class="help">You must enter a city here to proceed!</p>
+                </div>
+                <div class="control">
+                    <button class="button is-link" id="submit">Submit</button>
+                
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+<script src="./assets/js/script.js"></script>     
 </body>
 </html>
