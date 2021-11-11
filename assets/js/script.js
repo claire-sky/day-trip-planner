@@ -17,13 +17,22 @@ var citySearch = function (event) {
     if (city) {
         // function would go here to be called
         cityName.value = ""
-        modal.classList.remove("is-active");
-    } }
+        // modal.classList.remove("is-active");
+    }
+    saveCity(city);
+}
 
 // save city search to local storage
-var saveCity = function() {
-    if (previousCity.length === 5) {
-        previousCity.pop;
+var saveCity = function(city) {
+    loadCities();
+    for (var i = 0; i < previousCity.length; i++) {
+        if (previousCity[i].city === city) {
+            previousCity.splice([i], 1);
+            break;
+        };
+    };
+    if (previousCity.length > 4) {
+        previousCity.shift();
     };
     previousCity.push({"city": city});
     localStorage.setItem("previousCity", JSON.stringify(previousCity));
@@ -81,8 +90,8 @@ var rainRec = function(rainFall) {
 };
 
 // testing recommendations using a prompt until weather API is set up
-var tempMax = prompt("Enter a temperature 0-120");
-tempRec(tempMax);
+// var tempMax = prompt("Enter a temperature 0-120");
+// tempRec(tempMax);
 
 // Event Listener
 submit.addEventListener("click", citySearch)
