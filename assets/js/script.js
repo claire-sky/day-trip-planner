@@ -17,7 +17,7 @@ var citySearch = function (event) {
     if (city) {
         // function would go here to be called
         cityName.value = ""
-        // modal.classList.remove("is-active");
+        modal.classList.remove("is-active");
     }
     saveCity(city);
 }
@@ -43,6 +43,24 @@ var loadCities = function() {
     previousCity = JSON.parse(localStorage.getItem("previousCity"));
     if (!previousCity) {
         previousCity = [];
+    };
+};
+
+// display cities on modal
+var displayCities = function() {
+    loadCities();
+
+    // loop through cities and add to modal
+    for (var i = 0; i < previousCity.length; i++) {
+        var btn = document.createElement("button");
+        btn.type = "submit";
+        btn.name = "formBtn";
+        btn.classList.add("button", "is-info", "pb-2", "cityBtn");
+        btn.innerHTML = previousCity[i].city;
+
+        // add each to modal
+        document.getElementById("prior-city").appendChild(btn);
+        btn.addEventListener("click", citySearch)
     };
 };
 
@@ -106,4 +124,5 @@ function addItemsToBring(event) {
        itemInput.value=''
     }
 }
-itemInput.addEventListener('keyup', addItemsToBring)
+itemInput.addEventListener('keyup', addItemsToBring);
+displayCities();
