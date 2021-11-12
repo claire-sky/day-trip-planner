@@ -2,12 +2,10 @@ var cityForm = document.querySelector('#cityForm')
 var cityName = document.querySelector('#city')
 var submit = document.querySelector('#submit')
 var modal = document.querySelector('#mainModal')
-
 var previousCity = [];
 // var tempMax = daily.max.temp;
 // var windSpeed = daily.wind_speed;
 // var rainFall = daily.rain;
-
 const listItemsContainer= document.getElementById("list-items")
 const itemInput= document.getElementById("item-input")
 const itemsNull = document.getElementById('items-null')
@@ -20,12 +18,21 @@ var citySearch = function (event) {
         // function would go here to be called
         cityName.value = ""
         modal.classList.remove("is-active");
-    } }
+    }
+    saveCity(city);
+}
 
 // save city search to local storage
-var saveCity = function() {
-    if (previousCity.length === 5) {
-        previousCity.pop;
+var saveCity = function(city) {
+    loadCities();
+    for (var i = 0; i < previousCity.length; i++) {
+        if (previousCity[i].city === city) {
+            previousCity.splice([i], 1);
+            break;
+        };
+    };
+    if (previousCity.length > 4) {
+        previousCity.shift();
     };
     previousCity.push({"city": city});
     localStorage.setItem("previousCity", JSON.stringify(previousCity));
@@ -36,6 +43,24 @@ var loadCities = function() {
     previousCity = JSON.parse(localStorage.getItem("previousCity"));
     if (!previousCity) {
         previousCity = [];
+    };
+};
+
+// display cities on modal
+var displayCities = function() {
+    loadCities();
+
+    // loop through cities and add to modal
+    for (var i = 0; i < previousCity.length; i++) {
+        var btn = document.createElement("button");
+        btn.type = "submit";
+        btn.name = "formBtn";
+        btn.classList.add("button", "is-info", "pb-2", "cityBtn");
+        btn.innerHTML = previousCity[i].city;
+
+        // add each to modal
+        document.getElementById("prior-city").appendChild(btn);
+        btn.addEventListener("click", citySearch)
     };
 };
 
@@ -83,8 +108,8 @@ var rainRec = function(rainFall) {
 };
 
 // testing recommendations using a prompt until weather API is set up
-var tempMax = prompt("Enter a temperature 0-120");
-tempRec(tempMax);
+// var tempMax = prompt("Enter a temperature 0-120");
+// tempRec(tempMax);
 
 // Event Listener
 submit.addEventListener("click", citySearch)
@@ -99,4 +124,5 @@ function addItemsToBring(event) {
        itemInput.value=''
     }
 }
-itemInput.addEventListener('keyup', addItemsToBring)
+itemInput.addEventListener('keyup', addItemsToBring);
+displayCities();
