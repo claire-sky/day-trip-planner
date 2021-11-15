@@ -3,9 +3,8 @@ var cityName = document.querySelector('#city')
 var submit = document.querySelector('#submit')
 var modal = document.querySelector('#mainModal')
 var previousCity = [];
-// var tempMax = daily.max.temp;
-// var windSpeed = daily.wind_speed;
-// var rainFall = daily.rain;
+var city = [];
+var cityHistory = document.getElementById("city-history");
 const listItemsContainer= document.getElementById("list-items")
 const itemInput= document.getElementById("item-input")
 const itemsNull = document.getElementById('items-null')
@@ -13,7 +12,7 @@ const itemsNull = document.getElementById('items-null')
 // grabs input to verify if city was input, then calls another function (Would be API to grab lat/long)
 var citySearch = function (event) {
     event.preventDefault()
-    var city = cityName.value.trim()
+    city = cityName.value.trim()
     if (city) {
         // function would go here to be called
         cityName.value = ""
@@ -25,17 +24,24 @@ var citySearch = function (event) {
 // save city search to local storage
 var saveCity = function(city) {
     loadCities();
+
+    // check city history for entered city and remove from history if match
     for (var i = 0; i < previousCity.length; i++) {
         if (previousCity[i].city === city) {
             previousCity.splice([i], 1);
             break;
         };
     };
-    if (previousCity.length > 4) {
+
+    // limit saved cities to 6
+    if (previousCity.length > 5) {
         previousCity.shift();
     };
+
+    // add new city to history
     previousCity.push({"city": city});
     localStorage.setItem("previousCity", JSON.stringify(previousCity));
+    displayCities();
 };
 
 // retrieve city from local storage
@@ -49,18 +55,24 @@ var loadCities = function() {
 // display cities on modal
 var displayCities = function() {
     loadCities();
+    // clear cities before loading
+    while (cityHistory.hasChildNodes()) {  
+        cityHistory.removeChild(cityHistory.firstChild);
+    };
 
     // loop through cities and add to modal
-    for (var i = 0; i < previousCity.length; i++) {
+    for (var i = previousCity.length - 1; i >= 0; i--) {
         var btn = document.createElement("button");
         btn.type = "submit";
         btn.name = "formBtn";
-        btn.classList.add("button", "is-info", "pb-2", "cityBtn");
+        btn.classList.add("button", "pb-2", "cityBtn");
         btn.innerHTML = previousCity[i].city;
+        btn.value = previousCity[i].city;
 
         // add each to modal
-        document.getElementById("prior-city").appendChild(btn);
-        btn.addEventListener("click", citySearch)
+        cityHistory.appendChild(btn);
+        // load weather when button is clicked
+        btn.addEventListener("click", clickCity)
     };
 };
 
@@ -107,22 +119,25 @@ var rainRec = function(rainFall) {
     };
 };
 
-// testing recommendations using a prompt until weather API is set up
-// var tempMax = prompt("Enter a temperature 0-120");
-// tempRec(tempMax);
+// update city value when city button is clicked
+function clickCity() {
+    city = this.value;
+    citySearch();
+};
 
-// Event Listener
-submit.addEventListener("click", citySearch)
-
+// update item list with inputed item
 function addItemsToBring(event) {
-    if(event.keyCode===13 && itemInput.value){
-       const itemName= itemInput.value
-       const listItem=document.createElement('li')
+    if (event.keyCode === 13 && itemInput.value) {
+       const itemName = itemInput.value
+       const listItem = document.createElement('li')
        listItem.innerHTML = itemName
        itemsNull.style.display = 'none'
        listItemsContainer.appendChild(listItem)
        itemInput.value=''
     }
 }
+
+// Event Listener
+submit.addEventListener("click", citySearch)
 itemInput.addEventListener('keyup', addItemsToBring);
 displayCities();
