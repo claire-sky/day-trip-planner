@@ -5,9 +5,10 @@ var modal = document.querySelector('#mainModal')
 var previousCity = [];
 var city = [];
 var cityHistory = document.getElementById("city-history");
-const listItemsContainer= document.getElementById("list-items")
-const itemInput= document.getElementById("item-input")
-const itemsNull = document.getElementById('items-null')
+const listItemsContainer= document.getElementById("list-items");
+const itemInput= document.getElementById("item-input");
+let itemsList = [];
+const itemsNull = document.getElementById('items-null');
 
 // grabs input to verify if city was input, then calls another function (Would be API to grab lat/long)
 var citySearch = function (event) {
@@ -45,7 +46,7 @@ var saveCity = function(city) {
 };
 
 // retrieve city from local storage
-var loadCities = function() {
+var loadCities = function () {
     previousCity = JSON.parse(localStorage.getItem("previousCity"));
     if (!previousCity) {
         previousCity = [];
@@ -77,7 +78,7 @@ var displayCities = function() {
 };
 
 // recommended items based on max temperature
-var tempRec = function(tempMax) {
+var tempRec = function (tempMax) {
     if (tempMax < 32) {
         return alert("Scarf, gloves, warm hat, heavy jacket");
     } else if (tempMax < 50) {
@@ -92,7 +93,7 @@ var tempRec = function(tempMax) {
 };
 
 // recommended items based on wind speed
-var windRec = function(windSpeed) {
+var windRec = function (windSpeed) {
     if (windSpeed < 12) {
         return "Light jacket";
     } else if (windSpeed < 30) {
@@ -105,7 +106,7 @@ var windRec = function(windSpeed) {
 };
 
 // recommended items based on rain
-var rainRec = function(rainFall) {
+var rainRec = function (rainFall) {
     if (rainFall === 0) {
         return "";
     } else if (rainFall < 4) {
@@ -127,13 +128,42 @@ function clickCity() {
 
 // update item list with inputed item
 function addItemsToBring(event) {
-    if (event.keyCode === 13 && itemInput.value) {
-       const itemName = itemInput.value
-       const listItem = document.createElement('li')
-       listItem.innerHTML = itemName
-       itemsNull.style.display = 'none'
-       listItemsContainer.appendChild(listItem)
-       itemInput.value=''
+    if (event && event.keyCode === 13 && itemInput.value) {
+        const itemName = itemInput.value 
+        itemsList.push(itemName)
+        localStorage.setItem("itemsList", JSON.stringify(itemsList))
+        renderItemsToDOM()
+        itemInput.value = ''
+    }
+}
+
+function renderItemsToDOM() {
+    listItemsContainer.innerHTML = ''
+    const itemsList=JSON.parse(localStorage.getItem("itemsList")) 
+    for (let i = 0; i < itemsList.length; i++) {
+        const listItem = document.createElement('li')
+        listItem.innerHTML = itemsList[i]
+        const deletButton = document.createElement('button')
+        deletButton.innerHTML = "x"
+        deletButton.addEventListener('click', function(){removeItem(i)})
+        const itemContainer = document.createElement('div')
+        itemContainer.style.display = "flex"
+        itemContainer.style.justifyContent = "space-between"
+        itemContainer.appendChild(listItem)
+        itemContainer.appendChild(deletButton)
+        listItemsContainer.appendChild(itemContainer)
+    }
+};
+
+function removeItem(index) {
+    const listItemsInStorage = JSON.parse(localStorage.getItem('itemsList'))
+    listItemsInStorage.splice(index, 1)
+    localStorage.setItem('itemsList', JSON.stringify(listItemsInStorage))
+    renderItemsToDOM()
+    if(listItemsInStorage.length === 0) {
+        listItemsContainer.appendChild(itemsNull)
+        localStorage.removeItem('itemsList')
+        itemsList = []
     }
 }
 
@@ -141,3 +171,8 @@ function addItemsToBring(event) {
 submit.addEventListener("click", citySearch)
 itemInput.addEventListener('keyup', addItemsToBring);
 displayCities();
+
+const listItemsInStorage = JSON.parse(localStorage.getItem('itemsList'))
+if(listItemsInStorage.length) {
+  renderItemsToDOM()
+}
