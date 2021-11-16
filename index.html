@@ -15,16 +15,14 @@
         <div class="tile is-ancestor">
             <div class="tile is-12 is-parent">
                 <div class="tile is-child box has-background-primary" id="city-name-block">
-                    <!-- Remove this test city later -->
-                    <p class="box title has-text-centered">Get ready to visit TEST CITY! Check out the weather below and plan what you want to bring along!</p>
                 </div>
             </div>
         </div>
         <div class="tile is-ancestor">
             <div class="tile is-6 is-parent">
                 <div class="tile is-child box has-background-grey-lighter">
-                    <div class="box">
-                        Attach elements into me based on the city, temperature, wind, etc
+                    <div class="box" id="elements">
+                        <p>TEst </p>
                     </div>
                     <div class="box">
                         <input id="item-input" class="input is-primary" type="text" placeholder="Add item to bring">
@@ -64,7 +62,7 @@
                     <button class="button is-link" id="submit">Submit</button>
                 </div>
             </div>
-            <div>Or select from a prior search: 
+            <div>Or select from a prior search:
                 <div id="city-history"></div>
             </div>
         </div>
