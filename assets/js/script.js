@@ -53,7 +53,7 @@ var town = function (city) {
 
                     var date = new Date(data.sys.sunset * 1000)
                     var citySunset = document.createElement("p")
-                    citySunset.textContent = " Sunset will be at " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds() + "PM."
+                    citySunset.textContent = " Sunset will be at " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds() + "."
 
                     var flat = data.coord.lat
                     var vert = data.coord.lon
