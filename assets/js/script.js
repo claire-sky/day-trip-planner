@@ -11,64 +11,79 @@ const listItemsContainer = document.getElementById("list-items");
 const itemInput = document.getElementById("item-input");
 let itemsList = [];
 const itemsNull = document.getElementById('items-null');
-
+var itemRec = document.getElementById("item-rec");
+var tempMax = 0;
+var windSpeed = 0;
+var airQuality = 0;
 
 // grabs input to verify if city was input, then calls another function (Would be API to grab lat/long)
 var citySearch = function (event) {
     event.preventDefault()
-    city = cityName.value.trim()
+
+    city = cityName.value.trim();
     if (city) {
-        // function would go here to be called
-        town(city)
+        town(city);
         cityName.value = ""
-        modal.classList.remove("is-active");
     }
-    saveCity(city);
 }
-// API Calls
-var town = function (city) {
+
+// API Calls and display weather
+var town = function () {
+    modal.classList.remove("is-active");
     var apiUrl = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=6d1d7721cce65133dca83415077d7208&units=imperial"
     fetch(apiUrl)
         .then(function (response) {
 
             if (response.ok) {
-                //cityHistory.push(city)
 
                 response.json().then(function (data) {
-                    console.log(data)
+                    saveCity(city);
+
                     cityBlock.textContent = ""
                     var cityName = document.createElement("p")
                     cityName.classList = "box title has-text-centered"
                     cityName.textContent = "Get ready to visit " + data.name + "! Check out the weather below and plan what you want to bring along!"
                     cityBlock.appendChild(cityName)
 
+                    tempMax = data.main.temp_max;
                     var cityTemp = document.createElement("p")
-                    cityTemp.textContent = "Max Temperature for the day: " + data.main.temp_max + "\u00B0F. "
+                    cityTemp.textContent = "Max temperature for the day: " + tempMax + " \u00B0F. "
 
                     var cityHumid = document.createElement("p")
-                    cityHumid.textContent = " Humidity for the day: " + data.main.humidity + "%."
+                    cityHumid.textContent = "Humidity for the day: " + data.main.humidity + "%."
 
+                    windSpeed = data.wind.speed
                     var cityWind = document.createElement("p")
-                    cityWind.textContent = " Wind Speed will be " + data.wind.speed + " MPH."
+                    cityWind.textContent = "Wind speed will be " + windSpeed + " MPH."
 
                     var date = new Date(data.sys.sunset * 1000)
                     var citySunset = document.createElement("p")
-                    citySunset.textContent = " Sunset will be at " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds() + "."
+                    var hours = date.getHours()
+                    if (hours > 12) {
+                        hours = hours - 12;
+                    }
+                    citySunset.textContent = "Sunset will be at " + hours + ":" + date.getMinutes() + ":" + date.getSeconds() + "."
 
-                    var flat = data.coord.lat
-                    var vert = data.coord.lon
-                    // pollen api
-                    var pollen = "https://api.breezometer.com/air-quality/v2/current-conditions?lat=" + flat + "&lon=" + vert + "&key=453aa725e6e640bea18ebffa1017eba3"
-                    fetch(pollen)
+                    var lat = data.coord.lat
+                    var lon = data.coord.lon
+
+                    // air-quality api
+                    var airQualityAPI = "https://api.breezometer.com/air-quality/v2/current-conditions?lat=" + lat + "&lon=" + lon + "&key=453aa725e6e640bea18ebffa1017eba3"
+                    fetch(airQualityAPI)
                         .then(poly1 => poly1.json())
-                        .then(poly2 => { console.log(poly2)
-                            var pollenCount = document.createElement("p")
-                            pollenCount.textContent = " The Air Quality Index for the day will be: " + poly2.data.indexes.baqi.aqi + ". "
-                            cityElements.textContent = cityTemp.innerHTML + cityHumid.innerHTML + cityWind.innerHTML + citySunset.innerHTML + pollenCount.innerHTML
+                        .then(poly2 => {
+                            airQuality = poly2.data.indexes.baqi.category
+                            var cityAirQuality = document.createElement("p")
+                            cityAirQuality.textContent = airQuality + ". "
+                            cityElements.append(cityTemp, cityHumid, cityWind, citySunset, cityAirQuality)
                         })
+                    tempRec(tempMax);
+                    windRec(windSpeed);
+                    airRec(airQuality);
+
                 })
             } else {
-                alert("Not a valid city name!")
+                modal.classList.add("is-active");
             }
         })
 };
@@ -130,52 +145,75 @@ var displayCities = function () {
 };
 
 // recommended items based on max temperature
-var tempRec = function (tempMax) {
+var tempRec = function () {
+    var tempRecResult = document.createElement("li");
     if (tempMax < 32) {
-        return alert("Scarf, gloves, warm hat, heavy jacket");
+        tempRecResult.textContent = "Scarf, gloves, warm hat, heavy jacket"
+        itemRec.append(tempRecResult);
     } else if (tempMax < 50) {
-        return alert("Warm jacket");
+        tempRecResult.textContent = "Warm jacket"
+        itemRec.append(tempRecResult);
     } else if (tempMax < 70) {
-        return alert("Light jacket");
+        tempRecResult.textContent = "Light jacket"
+        itemRec.append(tempRecResult);
     } else if (tempMax < 85) {
-        return alert("Water");
+        tempRecResult.textContent = "Water"
+        itemRec.append(tempRecResult);
     } else {
-        return alert("Water, sun hat");
+        tempRecResult.textContent = "Water, sun hat"
+        itemRec.append(tempRecResult);
     };
 };
 
 // recommended items based on wind speed
-var windRec = function (windSpeed) {
-    if (windSpeed < 12) {
-        return "Light jacket";
+var windRec = function () {
+    var windRecResult = document.createElement("li");
+    if (windSpeed < 3) {
+        return;
+    } else if (windSpeed < 12) {
+        windRecResult.textContent = "Light sweater"
+        itemRec.append(windRecResult);
     } else if (windSpeed < 30) {
-        return "Wind breaker";
+        windRecResult.textContent = "Wind breaker"
+        itemRec.append(windRecResult);
     } else if (windSpeed < 50) {
-        return "Wind breaker and pants";
+        windRecResult.textContent = "Wind breaker and pants"
+        itemRec.append(windRecResult);
     } else {
-        return "Wind speed is dangerous; recommended stay indoors";
+        windRecResult.textContent = "Wind speed is dangerous; recommended stay indoors"
+        itemRec.append(windRecResult);
     };
 };
 
 // recommended items based on rain
-var rainRec = function (rainFall) {
-    if (rainFall === 0) {
-        return "";
-    } else if (rainFall < 4) {
-        return "Rain jacket or umbrella";
-    } else if (rainFall < 9) {
-        return "Umbrella, rain jacket";
-    } else if (rainFall < 40) {
-        return "Umbrella, rain jacket, rainboots";
-    } else {
-        return "Rain fall is dangerous; recommended stay indoors";
-    };
+var airRec = function () {
+    var airRecResult = document.createElement("li");
+    switch(airQuality) {
+        case "Unhealthy air quality for sensitive groups":
+            airRecResult.textContent = "Medical breathing device"
+            itemRec.append(airRecResult);
+            break;
+        case "Unhealthy air quality":
+            airRecResult.textContent = "Medical breathing device"
+            itemRec.append(airRecResult);
+            break;
+        case "Very unhealthy air quality":
+            airRecResult.textContent = "Air quality is very unhealthy; recommended limit outdoor activity";
+            itemRec.append(airRecResult);
+            break;
+        case "Hazardous air quality":
+            airRecResult.textContent = "Air quality is hazardous; recommended stay indoors";
+            itemRec.append(airRecResult);
+            break;
+        default:
+            "";
+    }
 };
 
 // update city value when city button is clicked
 function clickCity() {
     city = this.value;
-    citySearch();
+    town();
 };
 
 // update item list with inputed item
@@ -185,28 +223,37 @@ function addItemsToBring(event) {
         itemsList.push(itemName)
         localStorage.setItem("itemsList", JSON.stringify(itemsList))
         renderItemsToDOM()
+
+        // clear input field
         itemInput.value = ''
     }
 }
 
+// displaying items in list
 function renderItemsToDOM() {
     listItemsContainer.innerHTML = ''
     itemsList = JSON.parse(localStorage.getItem("itemsList"))
     for (let i = 0; i < itemsList.length; i++) {
-        listItem = document.createElement('li')
-        listItem.innerHTML = itemsList[i]
-        const deletButton = document.createElement('button')
-        deletButton.innerHTML = "x"
-        deletButton.addEventListener('click', function () { removeItem(i) })
+        // section for each item
         const itemContainer = document.createElement('div')
         itemContainer.style.display = "flex"
         itemContainer.style.justifyContent = "space-between"
-        itemContainer.appendChild(listItem)
-        itemContainer.appendChild(deletButton)
         listItemsContainer.appendChild(itemContainer)
+
+        // list each item
+        const listItem = document.createElement('li')
+        listItem.innerHTML = itemsList[i]
+        itemContainer.appendChild(listItem)
+
+        // delete button for each item
+        const deletButton = document.createElement('button')
+        deletButton.innerHTML = "x"
+        deletButton.addEventListener('click', function () { removeItem(i) })
+        itemContainer.appendChild(deletButton)
     }
 };
 
+// removing items from list
 function removeItem(index) {
     const listItemsInStorage = JSON.parse(localStorage.getItem('itemsList'))
     listItemsInStorage.splice(index, 1)
@@ -225,6 +272,6 @@ itemInput.addEventListener('keyup', addItemsToBring);
 displayCities();
 
 const listItemsInStorage = JSON.parse(localStorage.getItem('itemsList'))
-if(listItemsInStorage.length) {
-  renderItemsToDOM()
-} 
+if (listItemsInStorage.length) {
+    renderItemsToDOM()
+}
