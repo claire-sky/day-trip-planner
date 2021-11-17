@@ -16,26 +16,27 @@ const itemsNull = document.getElementById('items-null');
 // grabs input to verify if city was input, then calls another function (Would be API to grab lat/long)
 var citySearch = function (event) {
     event.preventDefault()
-    city = cityName.value.trim()
+
+    city = cityName.value.trim();
     if (city) {
-        // function would go here to be called
-        town(city)
+        town(city);
         cityName.value = ""
-        modal.classList.remove("is-active");
     }
-    saveCity(city);
 }
-// API Calls
-var town = function (city) {
+
+// API Calls and display weather
+var town = function () {
+    modal.classList.remove("is-active");
+    console.log(city);
     var apiUrl = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=6d1d7721cce65133dca83415077d7208&units=imperial"
     fetch(apiUrl)
         .then(function (response) {
 
             if (response.ok) {
-                //cityHistory.push(city)
 
                 response.json().then(function (data) {
-                    console.log(data)
+                    saveCity(city);
+
                     cityBlock.textContent = ""
                     var cityName = document.createElement("p")
                     cityName.classList = "box title has-text-centered"
@@ -64,7 +65,7 @@ var town = function (city) {
                         .then(poly2 => { console.log(poly2)
                             var pollenCount = document.createElement("p")
                             pollenCount.textContent = " The Air Quality Index for the day will be: " + poly2.data.indexes.baqi.aqi + ". "
-                            cityElements.textContent = cityTemp.innerHTML + cityHumid.innerHTML + cityWind.innerHTML + citySunset.innerHTML + pollenCount.innerHTML
+                            cityElements.append(cityTemp, cityHumid, cityWind, citySunset, pollenCount)
                         })
                 })
             } else {
@@ -175,7 +176,7 @@ var rainRec = function (rainFall) {
 // update city value when city button is clicked
 function clickCity() {
     city = this.value;
-    citySearch();
+    town();
 };
 
 // update item list with inputed item
@@ -185,28 +186,37 @@ function addItemsToBring(event) {
         itemsList.push(itemName)
         localStorage.setItem("itemsList", JSON.stringify(itemsList))
         renderItemsToDOM()
+
+        // clear input field
         itemInput.value = ''
     }
 }
 
+// displaying items in list
 function renderItemsToDOM() {
     listItemsContainer.innerHTML = ''
-    const itemsList = JSON.parse(localStorage.getItem("itemsList"))
+    itemsList = JSON.parse(localStorage.getItem("itemsList"))
     for (let i = 0; i < itemsList.length; i++) {
-        const listItem = document.createElement('li')
-        listItem.innerHTML = itemsList[i]
-        const deletButton = document.createElement('button')
-        deletButton.innerHTML = "x"
-        deletButton.addEventListener('click', function () { removeItem(i) })
+        // section for each item
         const itemContainer = document.createElement('div')
         itemContainer.style.display = "flex"
         itemContainer.style.justifyContent = "space-between"
+        listItemsContainer.appendChild(itemContainer)        
+        
+        // list each item
+        const listItem = document.createElement('li')
+        listItem.innerHTML = itemsList[i]
         itemContainer.appendChild(listItem)
-        itemContainer.appendChild(deletButton)
-        listItemsContainer.appendChild(itemContainer)
+
+        // delete button for each item
+        const deletButton = document.createElement('button')
+        deletButton.innerHTML = "x"
+        deletButton.addEventListener('click', function () { removeItem(i) })
+        itemContainer.appendChild(deletButton)        
     }
 };
 
+// removing items from list
 function removeItem(index) {
     const listItemsInStorage = JSON.parse(localStorage.getItem('itemsList'))
     listItemsInStorage.splice(index, 1)
