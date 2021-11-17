@@ -5,10 +5,13 @@ var modal = document.querySelector('#mainModal')
 var previousCity = [];
 var city = [];
 var cityHistory = document.getElementById("city-history");
-const listItemsContainer= document.getElementById("list-items");
-const itemInput= document.getElementById("item-input");
+var cityElements = document.querySelector('#elements');
+var cityBlock = document.querySelector('#city-name-block')
+const listItemsContainer = document.getElementById("list-items");
+const itemInput = document.getElementById("item-input");
 let itemsList = [];
 const itemsNull = document.getElementById('items-null');
+
 
 // grabs input to verify if city was input, then calls another function (Would be API to grab lat/long)
 var citySearch = function (event) {
@@ -22,35 +25,57 @@ var citySearch = function (event) {
     }
     saveCity(city);
 }
- // API Calls
+// API Calls
 var town = function (city) {
     var apiUrl = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=6d1d7721cce65133dca83415077d7208&units=imperial"
     fetch(apiUrl)
         .then(function (response) {
 
             if (response.ok) {
-                console.log(apiUrl)
                 //cityHistory.push(city)
 
                 response.json().then(function (data) {
                     console.log(data)
+                    cityBlock.textContent = ""
+                    var cityName = document.createElement("p")
+                    cityName.classList = "box title has-text-centered"
+                    cityName.textContent = "Get ready to visit " + data.name + "! Check out the weather below and plan what you want to bring along!"
+                    cityBlock.appendChild(cityName)
+
+                    var cityTemp = document.createElement("p")
+                    cityTemp.textContent = "Max Temperature for the day: " + data.main.temp_max + "\u00B0F. "
+
+                    var cityHumid = document.createElement("p")
+                    cityHumid.textContent = " Humidity for the day: " + data.main.humidity + "%."
+
+                    var cityWind = document.createElement("p")
+                    cityWind.textContent = " Wind Speed will be " + data.wind.speed + " MPH."
+
+                    var date = new Date(data.sys.sunset * 1000)
+                    var citySunset = document.createElement("p")
+                    citySunset.textContent = " Sunset will be at " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds() + "."
+
                     var flat = data.coord.lat
                     var vert = data.coord.lon
                     // pollen api
                     var pollen = "https://api.breezometer.com/air-quality/v2/current-conditions?lat=" + flat + "&lon=" + vert + "&key=453aa725e6e640bea18ebffa1017eba3"
                     fetch(pollen)
                         .then(poly1 => poly1.json())
-                        .then(poly2 => { console.log(poly2)})
-
-                    console.log(flat, vert)
+                        .then(poly2 => { console.log(poly2)
+                            var pollenCount = document.createElement("p")
+                            pollenCount.textContent = " The Air Quality Index for the day will be: " + poly2.data.indexes.baqi.aqi + ". "
+                            cityElements.textContent = cityTemp.innerHTML + cityHumid.innerHTML + cityWind.innerHTML + citySunset.innerHTML + pollenCount.innerHTML
+                        })
                 })
             } else {
                 alert("Not a valid city name!")
             }
         })
 };
+
+
 // save city search to local storage
-var saveCity = function(city) {
+var saveCity = function (city) {
     loadCities();
 
     // check city history for entered city and remove from history if match
@@ -67,7 +92,7 @@ var saveCity = function(city) {
     };
 
     // add new city to history
-    previousCity.push({"city": city});
+    previousCity.push({ "city": city });
     localStorage.setItem("previousCity", JSON.stringify(previousCity));
     displayCities();
 };
@@ -81,10 +106,10 @@ var loadCities = function () {
 };
 
 // display cities on modal
-var displayCities = function() {
+var displayCities = function () {
     loadCities();
     // clear cities before loading
-    while (cityHistory.hasChildNodes()) {  
+    while (cityHistory.hasChildNodes()) {
         cityHistory.removeChild(cityHistory.firstChild);
     };
 
@@ -156,7 +181,7 @@ function clickCity() {
 // update item list with inputed item
 function addItemsToBring(event) {
     if (event && event.keyCode === 13 && itemInput.value) {
-        const itemName = itemInput.value 
+        const itemName = itemInput.value
         itemsList.push(itemName)
         localStorage.setItem("itemsList", JSON.stringify(itemsList))
         renderItemsToDOM()
@@ -166,13 +191,13 @@ function addItemsToBring(event) {
 
 function renderItemsToDOM() {
     listItemsContainer.innerHTML = ''
-    const itemsList=JSON.parse(localStorage.getItem("itemsList")) 
+    const itemsList = JSON.parse(localStorage.getItem("itemsList"))
     for (let i = 0; i < itemsList.length; i++) {
         const listItem = document.createElement('li')
         listItem.innerHTML = itemsList[i]
         const deletButton = document.createElement('button')
         deletButton.innerHTML = "x"
-        deletButton.addEventListener('click', function(){removeItem(i)})
+        deletButton.addEventListener('click', function () { removeItem(i) })
         const itemContainer = document.createElement('div')
         itemContainer.style.display = "flex"
         itemContainer.style.justifyContent = "space-between"
@@ -187,7 +212,7 @@ function removeItem(index) {
     listItemsInStorage.splice(index, 1)
     localStorage.setItem('itemsList', JSON.stringify(listItemsInStorage))
     renderItemsToDOM()
-    if(listItemsInStorage.length === 0) {
+    if (listItemsInStorage.length === 0) {
         listItemsContainer.appendChild(itemsNull)
         localStorage.removeItem('itemsList')
         itemsList = []
@@ -202,4 +227,4 @@ displayCities();
 const listItemsInStorage = JSON.parse(localStorage.getItem('itemsList'))
 if(listItemsInStorage.length) {
   renderItemsToDOM()
-}
+} 
