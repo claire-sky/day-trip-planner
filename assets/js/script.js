@@ -30,7 +30,6 @@ var citySearch = function (event) {
 // API Calls and display weather
 var town = function () {
     modal.classList.remove("is-active");
-    console.log(city);
     var apiUrl = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=6d1d7721cce65133dca83415077d7208&units=imperial"
     fetch(apiUrl)
         .then(function (response) {
@@ -73,7 +72,6 @@ var town = function () {
                     fetch(airQualityAPI)
                         .then(poly1 => poly1.json())
                         .then(poly2 => {
-                            console.log(poly2.data);
                             airQuality = poly2.data.indexes.baqi.category
                             var cityAirQuality = document.createElement("p")
                             cityAirQuality.textContent = airQuality + ". "
@@ -85,7 +83,7 @@ var town = function () {
 
                 })
             } else {
-                alert("Not a valid city name!")
+                modal.classList.add("is-active");
             }
         })
 };
