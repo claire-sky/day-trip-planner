@@ -62,7 +62,7 @@ var town = function () {
                     var pollen = "https://api.breezometer.com/air-quality/v2/current-conditions?lat=" + flat + "&lon=" + vert + "&key=453aa725e6e640bea18ebffa1017eba3"
                     fetch(pollen)
                         .then(poly1 => poly1.json())
-                        .then(poly2 => { console.log(poly2)
+                        .then(poly2 => {
                             var pollenCount = document.createElement("p")
                             pollenCount.textContent = " The Air Quality Index for the day will be: " + poly2.data.indexes.baqi.aqi + ". "
                             cityElements.append(cityTemp, cityHumid, cityWind, citySunset, pollenCount)
@@ -201,8 +201,8 @@ function renderItemsToDOM() {
         const itemContainer = document.createElement('div')
         itemContainer.style.display = "flex"
         itemContainer.style.justifyContent = "space-between"
-        listItemsContainer.appendChild(itemContainer)        
-        
+        listItemsContainer.appendChild(itemContainer)
+
         // list each item
         const listItem = document.createElement('li')
         listItem.innerHTML = itemsList[i]
@@ -212,7 +212,7 @@ function renderItemsToDOM() {
         const deletButton = document.createElement('button')
         deletButton.innerHTML = "x"
         deletButton.addEventListener('click', function () { removeItem(i) })
-        itemContainer.appendChild(deletButton)        
+        itemContainer.appendChild(deletButton)
     }
 };
 
@@ -235,6 +235,6 @@ itemInput.addEventListener('keyup', addItemsToBring);
 displayCities();
 
 const listItemsInStorage = JSON.parse(localStorage.getItem('itemsList'))
-if(listItemsInStorage.length) {
-  renderItemsToDOM()
-} 
+if (listItemsInStorage.length) {
+    renderItemsToDOM()
+}
