@@ -191,9 +191,9 @@ function addItemsToBring(event) {
 
 function renderItemsToDOM() {
     listItemsContainer.innerHTML = ''
-    const itemsList = JSON.parse(localStorage.getItem("itemsList"))
+    itemsList = JSON.parse(localStorage.getItem("itemsList"))
     for (let i = 0; i < itemsList.length; i++) {
-        const listItem = document.createElement('li')
+        listItem = document.createElement('li')
         listItem.innerHTML = itemsList[i]
         const deletButton = document.createElement('button')
         deletButton.innerHTML = "x"
