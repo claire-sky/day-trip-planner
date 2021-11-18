@@ -1,9 +1,6 @@
 # Day Trip Planner
 A day trip planner that runs displays weather and pollen using OpenWeather API and BreezoMeter API.
 
-![website link](https://claire-sky.github.io/day-trip-planner/)
-![github repository](https://github.com/claire-sky/day-trip-planner/)
-
 ## User Story
 AS A frequent traveler
 I WANT see the weather and air conditions for the location I’m traveling to
@@ -31,4 +28,4 @@ Enter the city you are traveling to and the page displays the current weather an
 
 ## Assets
 The following image demonstrates the web application's appearance and functionality:
-![* Description.](./assets/images/day-trip-planner.jpg)
+![Website Preview](https://i.imgur.com/NQO6WwI.png Website Preview)
