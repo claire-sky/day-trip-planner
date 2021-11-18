@@ -28,4 +28,4 @@ Enter the city you are traveling to and the page displays the current weather an
 
 ## Assets
 The following image demonstrates the web application's appearance and functionality:
-![Website Preview](https://i.imgur.com/NQO6WwI.png Website Preview)
+![Website-Preview](https://i.imgur.com/NQO6WwI.png "Website Preview")
